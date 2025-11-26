@@ -1,10 +1,269 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Min Nginx Webbplats</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Merry Christmas</title>
+<style>
+  :root{
+    --bg1:#041123;
+    --bg2:#062c40;
+    --accent:#ffd700;
+    --green:#0b6b2e;
+    --red:#c62828;
+  }
+
+  html,body{height:100%;margin:0;font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background: linear-gradient(180deg,var(--bg1) 0%, var(--bg2) 100%); color:#fff; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;}
+
+  /* subtle star field */
+  .sky{
+    position:fixed; inset:0; overflow:hidden;
+    background:
+      radial-gradient(2px 2px at 10% 20%, rgba(255,255,255,0.8), transparent),
+      radial-gradient(1.5px 1.5px at 30% 10%, rgba(255,255,255,0.6), transparent),
+      radial-gradient(1.8px 1.8px at 70% 30%, rgba(255,255,255,0.7), transparent),
+      radial-gradient(1.2px 1.2px at 85% 15%, rgba(255,255,255,0.6), transparent),
+      radial-gradient(1.6px 1.6px at 60% 70%, rgba(255,255,255,0.5), transparent),
+      linear-gradient(180deg, rgba(2,5,20,0.2) 0%, rgba(0,0,0,0.15) 100%);
+    filter: drop-shadow(0 0 6px rgba(255,255,255,0.03));
+  }
+
+  .container{
+    position:relative; z-index:2;
+    min-height:100vh; display:flex; align-items:center; justify-content:center; padding:40px;
+  }
+
+  .card{
+    width:min(1100px,94%); max-width:1100px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.08));
+    border-radius:18px; padding:36px; box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+    display:grid; grid-template-columns: 1fr 420px; gap:28px; align-items:center;
+    backdrop-filter: blur(6px);
+  }
+
+  .greeting{
+    padding:24px;
+  }
+
+  .title{
+    font-family: "Brush Script MT", "Segoe Print", Georgia, serif;
+    font-size:64px; margin:0 0 8px 0; color: #fff; text-shadow: 0 6px 30px rgba(0,0,0,0.7);
+    letter-spacing:1px;
+  }
+
+  .subtitle{
+    font-size:20px; color: #e6f7ff; margin:0 0 18px 0; opacity:0.95;
+  }
+
+  .message{
+    color:#dbeeff; font-size:16px; line-height:1.6; margin-bottom:20px; max-width:60ch;
+  }
+
+  .cta{
+    display:inline-block; background: linear-gradient(90deg,#ff7b7b,#ffd36b); color:#111; padding:12px 18px; border-radius:12px; text-decoration:none; font-weight:700; box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+  }
+
+  /* Tree side */
+  .scene{
+    position:relative; height:420px; display:flex; align-items:flex-end; justify-content:center;
+  }
+
+  .ground{
+    position:absolute; left:0; right:0; bottom:0; height:72px; background:linear-gradient(180deg,#fff 0%, #dfeffb 100%); border-radius:20px 20px 0 0; box-shadow: inset 0 10px 20px rgba(0,0,0,0.15);
+  }
+
+  /* stylized tree using CSS triangles and ornaments */
+  .tree{
+    position:relative; width:260px; margin-bottom:40px;
+  }
+  .tree .layer{
+    width:0; height:0; border-left: 140px solid transparent; border-right: 140px solid transparent;
+    margin: -18px auto; /* overlap */
+  }
+  .layer.l1{ border-bottom:120px solid #0b611f; transform: scaleX(0.9); box-shadow: 0 8px 20px rgba(0,0,0,0.35); }
+  .layer.l2{ border-bottom:110px solid #0f7a2b; transform: scaleX(0.95); }
+  .layer.l3{ border-bottom:100px solid #168232; }
+  .trunk{ width:56px; height:60px; background:linear-gradient(180deg,#5b3a11,#3b230a); margin:0 auto; border-radius:6px; box-shadow: inset 0 6px 8px rgba(255,255,255,0.03); }
+
+  /* ornaments */
+  .ornament{
+    position:absolute; width:12px; height:12px; border-radius:50%; box-shadow:0 4px 10px rgba(0,0,0,0.45); opacity:0.98;
+  }
+  .ornament::after{ content:''; position:absolute; top:-4px; left:50%; transform:translateX(-50%); width:2px; height:4px; background:#333; border-radius:1px; opacity:0.35; }
+
+  /* lights (animated) */
+  .lights{
+    position:absolute; left:0; right:0; top:-12px; height:250px; pointer-events:none;
+  }
+  .light{
+    position:absolute; width:8px; height:8px; border-radius:50%; box-shadow:0 0 12px rgba(255,255,255,0.6);
+    animation: twinkle var(--dur) linear infinite; opacity:0.9;
+  }
+  @keyframes twinkle{
+    0%{ filter: blur(0); transform:scale(1); opacity:0.6; }
+    50%{ filter: blur(4px); transform:scale(1.6); opacity:1; }
+    100%{ filter: blur(0); transform:scale(1); opacity:0.6; }
+  }
+
+  /* snow container sits above */
+  .snow-layer{ position:fixed; inset:0; pointer-events:none; z-index:3; }
+
+  /* footer snow message */
+  .footer{
+    margin-top:18px; font-size:13px; color:#bfe6ff; opacity:0.9;
+  }
+
+  /* responsive */
+  @media (max-width:900px){
+    .card{ grid-template-columns: 1fr; padding:20px; gap:18px; }
+    .scene{ height:320px; }
+    .tree{ width:220px; }
+    .title{ font-size:44px; }
+  }
+</style>
 </head>
 <body>
-    <h1>Hej! Detta är min hemsida från Azure VM.</h1>
-    <p>Sidan levereras av Nginx!</p>
+  <div class="sky" aria-hidden="true"></div>
+
+  <div class="container">
+    <div class="card" role="main" aria-labelledby="greet">
+      <div class="greeting">
+        <h1 id="greet" class="title">Merry Christmas</h1>
+        <p class="subtitle">Wishing you warmth, laughter and cozy moments</p>
+        <p class="message">May your holidays be filled with joy, good company, and a little bit of magic. Enjoy the lights, the music in the air, and maybe a cup of something warm by the tree.</p>
+        <a class="cta" href="#" onclick="alert('Happy Holidays!'); return false;">Share the Cheer</a>
+
+        <p class="footer">Tip: Resize the window to see more snowflakes fall.</p>
+      </div>
+
+      <div class="scene" aria-hidden="true">
+        <div class="tree" id="tree">
+          <div class="layer l1"></div>
+          <div class="layer l2"></div>
+          <div class="layer l3"></div>
+          <div class="trunk"></div>
+
+          <!-- ornaments positioned by JS for variety -->
+        </div>
+
+        <div class="ground" style="width:100%; max-width:520px;"></div>
+
+        <!-- Lights overlay -->
+        <div class="lights" id="lights"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- snow layer -->
+  <div class="snow-layer" id="snow"></div>
+
+<script>
+/* Create ornaments on the tree with random positions */
+(function createOrnaments(){
+  const tree = document.getElementById('tree');
+  const colors = ['#ffdede', '#ffd54f', '#ff8a80', '#80d8ff', '#ff4081', '#7fff7f'];
+  const positions = [
+    {x:50, y:20},{x:30,y:55},{x:70,y:55},{x:20,y:100},{x:80,y:100},
+    {x:42,y:75},{x:58,y:75},{x:50,y:120},{x:30,y:130},{x:70,y:130}
+  ];
+  positions.forEach((p,i)=>{
+    const el = document.createElement('div');
+    el.className='ornament';
+    el.style.left = p.x+'%';
+    el.style.top = p.y+'px';
+    el.style.background = colors[i % colors.length];
+    el.style.width = (10 + (i%3)*4)+'px';
+    el.style.height = el.style.width;
+    el.style.transform = 'translateX(-50%)';
+    tree.appendChild(el);
+  });
+})();
+
+/* Create twinkling lights around the tree */
+(function createLights(){
+  const lights = document.getElementById('lights');
+  const count = 16;
+  for(let i=0;i<count;i++){
+    const el = document.createElement('div');
+    el.className='light';
+    const left = 10 + Math.random()*80;
+    const top = 20 + Math.random()*200;
+    el.style.left = left + '%';
+    el.style.top = top + 'px';
+    const hue = Math.floor(20 + Math.random()*140);
+    el.style.background = `hsl(${hue}deg 90% 60%)`;
+    const dur = (2 + Math.random()*3).toFixed(2)+'s';
+    el.style.setProperty('--dur', dur);
+    el.style.opacity = 0.9 - Math.random()*0.4;
+    lights.appendChild(el);
+  }
+})();
+
+/* Falling snowflakes */
+(function snowFall(){
+  const container = document.getElementById('snow');
+  const flakes = Math.min(Math.round(window.innerWidth/12), 200);
+  const frag = document.createDocumentFragment();
+
+  for(let i=0;i<flakes;i++){
+    const f = document.createElement('div');
+    const size = (6 + Math.random()*18);
+    f.style.position='absolute';
+    f.style.left = Math.random()*100 + '%';
+    f.style.top = -10 - Math.random()*100 + 'px';
+    f.style.width = size+'px';
+    f.style.height = size+'px';
+    f.style.borderRadius = '50%';
+    f.style.background = 'radial-gradient(circle at 35% 35%, rgba(255,255,255,0.95), rgba(255,255,255,0.8) 40%, rgba(255,255,255,0.55))';
+    f.style.opacity = (0.6 + Math.random()*0.8);
+    const duration = (8 + Math.random()*14).toFixed(2);
+    const delay = (Math.random()*-20).toFixed(2);
+    f.style.transition = 'transform linear';
+    // use transform animation via requestAnimationFrame to get sway
+    f.dataset.startX = parseFloat(f.style.left);
+    f.dataset.size = size;
+    f.dataset.duration = duration;
+    f.dataset.delay = delay;
+    frag.appendChild(f);
+  }
+  container.appendChild(frag);
+
+  // animate using requestAnimationFrame for smooth motion
+  const flakesEls = Array.from(container.children);
+  const start = performance.now();
+
+  function frame(now){
+    const t = (now - start) / 1000;
+    flakesEls.forEach((el,idx)=>{
+      const dur = parseFloat(el.dataset.duration);
+      const delay = parseFloat(el.dataset.delay);
+      // progress with individual offset
+      const progress = ((t + delay) % dur) / dur;
+      const top = progress * (window.innerHeight + 200) - 100;
+      // horizontal sway
+      const sway = Math.sin((t*1.2 + idx) * (0.3 + (idx%7)/10)) * (20 + (idx%5));
+      const left = el.dataset.startX * (window.innerWidth/100) + sway;
+      el.style.transform = `translate(${left}px, ${top}px)`;
+      // tiny rotation
+      el.style.filter = `blur(${Math.abs(Math.sin(progress*Math.PI))*0.6}px)`;
+    });
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+
+  // recreate on resize to adjust count/positions
+  window.addEventListener('resize', () => {
+    // simple reload to regenerate with new counts
+    // keeps the demo simple
+    clearTimeout(window.__snowresize);
+    window.__snowresize = setTimeout(()=> location.reload(), 300);
+  });
+})();
+
+/* Accessibility: allow keyboard CTA activation */
+document.querySelectorAll('.cta').forEach(el=>{
+  el.addEventListener('keydown', e=>{ if(e.key==='Enter' || e.key===' ') el.click(); });
+});
+</script>
 </body>
 </html>

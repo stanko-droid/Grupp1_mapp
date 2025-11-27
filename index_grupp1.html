@@ -1,243 +1,302 @@
+// ...existing code...
 <!doctype html>
 <html lang="sv">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>STAR WARS‑mässan — Välkommen</title>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+<title>AI Workshop — Anmälan öppnar 18 dec | Event 11 jan 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg-1:#03060b;
-    --bg-2:#071426;
-    --nebula-1: #08121a;
-    --accent:#ffd24d;
-    --muted:#b7c7d6;
+    --bg1:#050816;
+    --bg2:#08102a;
+    --accent:#4ef1c3;
+    --accent-2:#7ad0ff;
+    --muted:#9fb3c9;
     --card: rgba(255,255,255,0.03);
-    --glass: rgba(255,255,255,0.04);
-    --glass-strong: rgba(255,255,255,0.06);
   }
-
-  /* Reset & layout */
   *{box-sizing:border-box}
-  html,body{height:100%;margin:0;font-family:Roboto, system-ui, -apple-system, "Segoe UI", sans-serif;background:linear-gradient(180deg,var(--bg-1),var(--bg-2));color:#fff;overflow:hidden}
-  .stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:28px;z-index:1}
+  html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial; background:linear-gradient(180deg,var(--bg1),var(--bg2)); color:#e6f0f8; -webkit-font-smoothing:antialiased;}
+  .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:36px;position:relative;overflow:hidden}
+  /* neural grid background */
+  .grid {
+    position:fixed;inset:0;z-index:0;pointer-events:none;background:
+      radial-gradient(1200px 400px at 10% 10%, rgba(78,241,195,0.03), transparent),
+      radial-gradient(800px 300px at 90% 80%, rgba(122,208,255,0.03), transparent);
+  }
+  canvas#net{position:fixed;inset:0;z-index:0;pointer-events:none}
 
-  /* wrapper card */
   .card{
-    width:min(1100px,96%); max-width:1100px; border-radius:16px; padding:28px; position:relative;
-    display:grid; grid-template-columns: 1fr 360px; gap:26px; align-items:center;
-    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-    box-shadow: 0 12px 50px rgba(3,6,12,0.6), inset 0 1px 0 rgba(255,255,255,0.02);
-    backdrop-filter: blur(6px) saturate(120%);
-    border: 1px solid rgba(255,255,255,0.03);
+    position:relative;z-index:2;width:min(1100px,96%);max-width:1100px;border-radius:14px;padding:28px;display:grid;grid-template-columns:1fr 380px;gap:22px;
+    background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.03);
+    box-shadow:0 18px 60px rgba(3,6,12,0.6);backdrop-filter: blur(6px) saturate(120%);
   }
+  header h1{ font-family:Orbitron, sans-serif; font-weight:700; color:var(--accent); margin:0; font-size:36px; letter-spacing:1px;}
+  header p.lead{margin:8px 0 18px;color:var(--muted);font-size:15px}
 
-  /* left content - cinematic header & crawl */
-  .left h1{
-    margin:0; font-family:Orbitron, sans-serif; font-weight:700; letter-spacing:2px;
-    font-size:44px; color:var(--accent); text-transform:uppercase; text-shadow:0 6px 30px rgba(0,0,0,0.6);
-  }
-  .lead{margin:10px 0 18px;color:var(--muted);font-size:15px}
-  .logo-row{display:flex;align-items:center;gap:12px}
-  .emblem{
-    width:64px;height:64px;border-radius:10px;background:linear-gradient(180deg,#0b1630,#061022);
-    display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(0,0,0,0.6);
-    border:1px solid rgba(255,255,255,0.04);
-  }
-  .emblem::after{content:'★';font-size:28px;color:var(--accent);opacity:0.95;filter:drop-shadow(0 6px 12px rgba(255,210,77,0.07))}
+  /* event info */
+  .meta{display:flex;flex-direction:column;gap:10px}
+  .meta .box{background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005)); padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.02)}
+  .meta .box strong{display:block;color:var(--accent-2);font-weight:700}
+  .meta .when{font-size:14px;color:#d7eef7}
 
-  /* crawl */
-  .crawl-shell{height:240px;overflow:hidden;perspective:900px;margin-top:8px;border-radius:10px;}
-  .crawl{
-    color:#dbeeff;font-size:15px;line-height:1.6;text-align:center;transform-origin:50% 100%;
-    transform: translateZ(-600px) rotateX(25deg) translateY(140%);
-    animation: crawl 14s linear infinite;
-    padding:18px 28px;
-    background: linear-gradient(180deg, rgba(8,12,18,0.0), rgba(8,12,18,0.02));
-    border-radius:8px;
-  }
-  @keyframes crawl{
-    0%{transform: translateZ(-600px) rotateX(25deg) translateY(140%);opacity:0}
-    6%{opacity:1}
-    100%{transform: translateZ(260px) rotateX(25deg) translateY(-260%);opacity:0}
-  }
+  /* speakers */
+  .speakers{display:grid;grid-template-columns:repeat(1,1fr);gap:12px;margin-top:6px}
+  .speaker{display:flex;gap:12px;align-items:flex-start;background:rgba(255,255,255,0.01);padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.02)}
+  .avatar{width:64px;height:64px;border-radius:10px;flex:0 0 64px;background:linear-gradient(180deg,var(--accent-2),var(--accent));display:flex;align-items:center;justify-content:center;color:#041826;font-weight:800;font-family:Orbitron}
+  .smeta{font-size:13px;color:var(--muted)}
+  .talk{font-size:14px;color:#eaf8f3;margin-top:6px}
 
-  /* right panel - signup */
-  .panel{
-    background: linear-gradient(180deg, rgba(255,255,255,0.018), rgba(255,255,255,0.012));
-    padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.03);
-    display:flex;flex-direction:column;gap:12px;
+  /* registration panel */
+  aside.panel{padding:18px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.008));border:1px solid rgba(255,255,255,0.03);display:flex;flex-direction:column;gap:12px}
+  .status{display:inline-block;padding:8px 12px;border-radius:999px;background:linear-gradient(90deg,#ffd24d,#ffb347);color:#04121a;font-weight:700;align-self:flex-start}
+  .countdown{font-family:Orbitron, monospace;color:var(--accent);font-size:20px;letter-spacing:1px}
+  label{font-size:13px;color:var(--muted);display:block;margin-bottom:6px}
+  input[type="text"], input[type="email"]{
+    width:100%;padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#e6f0f8;font-size:14px;
   }
-  .status{display:inline-block;padding:8px 12px;border-radius:999px;font-weight:700;color:#08121a;background:linear-gradient(90deg,#ffd24d,#ffb347);align-self:flex-start;box-shadow:0 6px 18px rgba(0,0,0,0.4)}
-  .panel h2{margin:0;font-size:20px;font-weight:700}
-  .info{color:var(--muted);font-size:14px}
+  .btn{
+    display:inline-flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;border:none;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#041826;font-weight:800;cursor:pointer;
+  }
+  .btn[disabled]{opacity:0.7;cursor:not-allowed;filter:grayscale(0.12)}
 
-  .signup{
-    display:flex;gap:10px;margin-top:6px;
-  }
-  .signup input[type="email"]{
-    flex:1;padding:12px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);
-    background:transparent;color:#fff;font-size:14px;outline:none;
-    transition: box-shadow .18s, transform .12s;
-  }
-  .signup input[type="email"]:focus{box-shadow:0 6px 18px rgba(13,50,100,0.09);transform:translateY(-2px)}
-  .signup button{
-    padding:12px 14px;border-radius:10px;border:none;background:linear-gradient(90deg,#2bffb3,#7df7ff);color:#08121a;font-weight:800;cursor:not-allowed;opacity:0.95;
-  }
-  .hint{font-size:13px;color:#9fb2c9}
+  .note{font-size:13px;color:var(--muted)}
+  footer{font-size:13px;color:var(--muted);margin-top:8px}
 
-  /* decorative saber separators */
-  .sabers{
-    position:absolute;left:28px;right:28px;bottom:-18px;height:10px;pointer-events:none;display:flex;gap:8px;justify-content:center;z-index:0
-  }
-  .saber{flex:1;height:6px;border-radius:999px;background:linear-gradient(90deg,rgba(255,0,97,0.12),rgba(255,210,77,0.18));filter:blur(6px);opacity:0.8}
+  /* snow */
+  .snow-layer{position:fixed;inset:0;pointer-events:none;z-index:3}
+  .flake{position:absolute;color:white;font-size:18px;opacity:0.85;filter:drop-shadow(0 2px 6px rgba(0,0,0,0.6))}
 
-  /* background layers: nebula + stars (CSS + canvas overlay) */
-  .bg-nebula{
-    position:fixed;inset:0;z-index:0;mix-blend-mode:screen;opacity:0.65;
-    background:
-      radial-gradient(600px 300px at 10% 20%, rgba(45,90,150,0.12), transparent),
-      radial-gradient(500px 260px at 85% 60%, rgba(120,40,100,0.08), transparent),
-      radial-gradient(420px 220px at 50% 10%, rgba(20,70,130,0.09), transparent);
-    pointer-events:none;
-    filter: blur(30px) saturate(120%);
+  /* responsive */
+  @media (max-width:980px){
+    .card{grid-template-columns:1fr; padding:18px}
+    aside.panel{order:2}
   }
-
-  /* small responsive tweaks */
-  @media (max-width:920px){
-    .card{grid-template-columns:1fr;gap:18px;padding:18px}
-    .crawl-shell{height:180px}
-    .panel{order:2}
-    .sabers{left:18px;right:18px}
-  }
-
-  /* subtle accessibility focus */
-  :focus{outline: 3px solid rgba(255,210,77,0.12); outline-offset:3px}
 </style>
 </head>
 <body>
-  <div class="bg-nebula" aria-hidden="true"></div>
-  <canvas id="stars" aria-hidden="true" style="position:fixed;inset:0;z-index:0"></canvas>
+  <div class="grid" aria-hidden="true"></div>
+  <canvas id="net" aria-hidden="true"></canvas>
+  <div class="snow-layer" id="snow" aria-hidden="true"></div>
 
-  <main class="stage" role="main" aria-labelledby="title">
-    <section class="card" aria-describedby="desc">
-      <div class="left" id="desc">
-        <div class="logo-row">
-          <div class="emblem" aria-hidden="true"></div>
-          <h1 id="title">Välkommen, gäst</h1>
-        </div>
+  <main class="wrap" role="main" aria-labelledby="pageTitle">
+    <section class="card" aria-describedby="intro">
+      <div>
+        <header>
+          <h1 id="pageTitle">AI Workshop: Från idé till praktisk nytta</h1>
+          <p id="intro" class="lead">En kvällsession om hur organisationer kan använda modern AI för verklig nytta. Anmälningen öppnar 18 december. Eventet hålls 11 januari 2026 kl. 17:00–20:00.</p>
+        </header>
 
-        <p class="lead">Till STAR WARS‑mässan — en galax full av fans, kostymer och äventyr.</p>
+        <div class="meta">
+          <div class="box">
+            <strong>Event:</strong>
+            <div class="when">AI i praktiken — så får du verklig nytta av modern IT i din organisation</div>
+            <div class="when" style="margin-top:6px"><strong>Datum:</strong> 11/1 - 2026</div>
+            <div class="when"><strong>Tid:</strong> 17.00 - 20.00</div>
+          </div>
 
-        <div class="crawl-shell" aria-live="polite">
-          <div class="crawl" role="article" aria-label="Kort meddelande om anmälan">
-            <p><strong>Observera:</strong> Anmälningen till STAR WARS‑mässan öppnar snart. Håll utkik efter ny information här och via våra officiella kanaler.</p>
-            <p>Förbered din bästa kostym, samla vännerna och gör dig redo för panelsamtal, utställare och interaktiva upplevelser. Vi ser fram emot att fira galaxens berättelser tillsammans.</p>
+          <div class="box" style="display:flex;gap:12px;flex-direction:column">
+            <strong>Föreläsare</strong>
+            <div class="speakers" aria-label="Föreläsare">
+              <div class="speaker">
+                <div class="avatar">CS</div>
+                <div>
+                  <div style="font-weight:700">Christian Shultz</div>
+                  <div class="smeta">Forskare inom artificiell intelligens och kognitionsvetenskap</div>
+                  <div class="talk">Christian forskar på hur människor och AI bearbetar och använder information för hållbara, långsiktiga samspel mellan människor och IT.</div>
+                </div>
+              </div>
+
+              <div class="speaker">
+                <div class="avatar">EJ</div>
+                <div>
+                  <div style="font-weight:700">Dr. Elara Jönsson</div>
+                  <div class="smeta">Kognitionsvetare · Expert på Människa‑AI‑Interaktion</div>
+                  <div class="talk">"AI som din personliga produktivitetscoach: Från e-post till brainstorming." Praktiska tillämpningar av generativ AI för vardagligt och professionellt bruk.</div>
+                </div>
+              </div>
+
+              <div class="speaker">
+                <div class="avatar">MD</div>
+                <div>
+                  <div style="font-weight:700">Marcus Dahlgren</div>
+                  <div class="smeta">Digital strateg · Kreativ teknikpionjär</div>
+                  <div class="talk">"Den kreativa revolutionen: Hur AI-verktyg omformar design och idégenerering." Marcus hjälper varumärken att integrera AI för bildskapande och innehållsplanering.</div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        <p style="margin-top:14px;color:var(--muted);font-size:13px">Tips: Den här sidan har en filmisk crawl-animation och uppdaterar sig när anmälan öppnar.</p>
+        <footer>
+          <div class="note">Plats och praktisk information skickas till anmälda deltagare via e-post.</div>
+        </footer>
       </div>
 
-      <aside class="panel" aria-labelledby="panelTitle">
-        <div class="status" id="status">ÖPPNAR SNART</div>
-        <h2 id="panelTitle">Anmälan & Biljetter</h2>
-        <p class="info">Biljettsläpp och mer information publiceras inom kort. Skriv upp din e‑post för att få avisering när anmälan öppnar.</p>
+      <aside class="panel" aria-labelledby="regTitle">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+          <div>
+            <div class="status" id="statusPill">ANMÄLAN STÄNGD</div>
+            <div style="font-size:13px;color:var(--muted);margin-top:6px" id="openHint">Öppnar 18 december</div>
+          </div>
+          <div class="countdown" id="countdown" aria-live="polite">--:--:--</div>
+        </div>
 
-        <form class="signup" onsubmit="event.preventDefault()" aria-label="Anmälan">
-          <input type="email" id="email" placeholder="Din e‑post" aria-label="E‑post" disabled>
-          <button id="submitBtn" type="submit" disabled>Anmäl</button>
+        <h3 id="regTitle" style="margin:6px 0 0 0">Anmälan</h3>
+        <div class="note">Fyll i uppgifter nedan. Anmälan öppnar automatiskt vid angiven tidpunkt.</div>
+
+        <form id="regForm" onsubmit="return false" aria-label="Registreringsformulär">
+          <label for="name">Namn</label>
+          <input id="name" type="text" placeholder="För- och efternamn" disabled>
+
+          <label for="email">E‑post</label>
+          <input id="email" type="email" placeholder="din@epost.se" disabled>
+
+          <label for="org">Organisation (valfritt)</label>
+          <input id="org" type="text" placeholder="Företag / organisation" disabled>
+
+          <div style="margin-top:10px;display:flex;gap:8px;">
+            <button id="submitBtn" class="btn" disabled><span>Anmäl</span></button>
+            <button id="demoBtn" type="button" class="btn" style="background:linear-gradient(90deg,#2bffb3,#7df7ff);color:#04121a" title="Demo" onclick="alert('Detta är en demo — verklig anmälan öppnar 18 december.')" >Demo</button>
+          </div>
+
+          <div style="margin-top:8px;font-size:13px;color:var(--muted)">Event: 11 jan 2026 • 17:00–20:00</div>
         </form>
-
-        <div class="hint">Prova att uppdatera sidan senare — eller följ våra sociala kanaler för snabba uppdateringar.</div>
       </aside>
-
-      <div class="sabers" aria-hidden="true">
-        <div class="saber"></div>
-        <div class="saber"></div>
-        <div class="saber"></div>
-      </div>
     </section>
   </main>
 
 <script>
-/* Starfield canvas with parallax & twinkle */
+/* Registration opening logic */
 (function(){
-  const canvas = document.getElementById('stars');
-  const ctx = canvas.getContext('2d');
-  let W,H,stars=[];
-  function resize(){ W=canvas.width=innerWidth; H=canvas.height=innerHeight; makeStars(); }
-  function makeStars(){
-    const count = Math.max(160, Math.floor(W/6));
-    stars = new Array(count).fill(0).map(()=>({
-      x: Math.random()*W,
-      y: Math.random()*H,
-      z: Math.random(),
-      r: (Math.random()*1.5)+0.3,
-      spin: Math.random()*0.02-0.01,
-      vx: (Math.random()-0.5)*0.03
-    }));
-  }
-  function render(t){
-    ctx.clearRect(0,0,W,H);
-    // subtle vignette
-    const g = ctx.createLinearGradient(0,0,0,H);
-    g.addColorStop(0, 'rgba(2,6,14,0.0)');
-    g.addColorStop(1, 'rgba(0,0,0,0.35)');
-    ctx.fillStyle=g;
-    ctx.fillRect(0,0,W,H);
+  const openDate = new Date(2025, 11, 18, 0, 0, 0); // 2025-12-18 local time (month index 11 = December)
+  const formEls = { name: document.getElementById('name'), email: document.getElementById('email'), org: document.getElementById('org'), btn: document.getElementById('submitBtn'), status: document.getElementById('statusPill'), hint: document.getElementById('openHint'), countdown: document.getElementById('countdown')};
 
-    // stars
-    for(let i=0;i<stars.length;i++){
-      const s = stars[i];
-      s.x += s.vx + Math.sin((t/1000 + i)*0.0007)*0.12;
-      s.y += 0.15 + s.z*0.5;
-      if(s.y > H+10){ s.y = -10; s.x = Math.random()*W; }
-      if(s.x < -20) s.x = W+20;
-      if(s.x > W+20) s.x = -20;
-      const alpha = 0.5 + 0.5*Math.sin((t/500 + i)*0.5);
-      ctx.beginPath();
-      ctx.fillStyle = `rgba(255,255,255,${(alpha*s.z).toFixed(2)})`;
-      ctx.arc(s.x, s.y, s.r*(1 + s.z*1.8), 0, Math.PI*2);
-      ctx.fill();
+  function update(){
+    const now = new Date();
+    const diff = openDate - now;
+    if(diff <= 0){
+      enableForm();
+      formEls.countdown.textContent = 'OPEN';
+      return;
     }
-    requestAnimationFrame(render);
+    const d = Math.floor(diff / (1000*60*60*24));
+    const h = Math.floor((diff/(1000*60*60))%24);
+    const m = Math.floor((diff/(1000*60))%60);
+    const s = Math.floor((diff/1000)%60);
+    formEls.countdown.textContent = `${String(d).padStart(2,'0')}d ${String(h).padStart(2,'0')}h`;
+    formEls.hint.textContent = `Öppnar ${openDate.toLocaleDateString('sv-SE')}`;
+  }
+
+  function enableForm(){
+    formEls.status.textContent = 'ANMÄLAN ÖPPEN';
+    formEls.status.style.background = 'linear-gradient(90deg,#2bffb3,#7df7ff)';
+    formEls.hint.textContent = 'Anmälan är öppen';
+    formEls.name.disabled = false;
+    formEls.email.disabled = false;
+    formEls.org.disabled = false;
+    formEls.btn.disabled = false;
+    formEls.btn.addEventListener('click', submit);
+  }
+
+  function submit(){
+    const name = formEls.name.value.trim();
+    const email = formEls.email.value.trim();
+    if(!name || !email) { alert('Ange namn och e‑post.'); return; }
+    // Demo: visa bekräftelse. I produktion skicka till server.
+    alert(`Tack för din anmälan, ${name}!\nVi skickar detaljer till ${email}.`);
+    formEls.name.value=''; formEls.email.value=''; formEls.org.value='';
+  }
+
+  update();
+  const int = setInterval(()=> {
+    update();
+    if(new Date() >= openDate) clearInterval(int);
+  }, 1000 * 30); // uppdatera var 30s
+})();
+
+/* Simple neural net canvas background (nodes + links) */
+(function(){
+  const canvas = document.getElementById('net');
+  const ctx = canvas.getContext('2d');
+  let W,H, nodes = [];
+  function resize(){ W = canvas.width = innerWidth; H = canvas.height = innerHeight; initNodes(); }
+  function initNodes(){
+    nodes = [];
+    const count = Math.max(18, Math.floor(W/140));
+    for(let i=0;i<count;i++){
+      nodes.push({x: Math.random()*W, y: Math.random()*H, r: 1.2 + Math.random()*2.4, vx:(Math.random()-0.5)*0.3, vy:(Math.random()-0.5)*0.3});
+    }
+  }
+  function draw(t){
+    ctx.clearRect(0,0,W,H);
+    // connect
+    for(let i=0;i<nodes.length;i++){
+      for(let j=i+1;j<nodes.length;j++){
+        const a = nodes[i], b = nodes[j];
+        const dx = a.x-b.x, dy = a.y-b.y;
+        const dist = Math.hypot(dx,dy);
+        if(dist < 220){
+          ctx.strokeStyle = `rgba(126,208,255,${Math.max(0,0.08 - dist/1500)})`;
+          ctx.lineWidth = 1;
+          ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
+        }
+      }
+    }
+    // nodes
+    for(const n of nodes){
+      n.x += n.vx; n.y += n.vy;
+      if(n.x < 0 || n.x > W) n.vx *= -1;
+      if(n.y < 0 || n.y > H) n.vy *= -1;
+      const g = ctx.createRadialGradient(n.x,n.y,0,n.x,n.y,12);
+      g.addColorStop(0, 'rgba(78,241,195,0.9)');
+      g.addColorStop(1, 'rgba(78,241,195,0.05)');
+      ctx.fillStyle = g;
+      ctx.beginPath(); ctx.arc(n.x,n.y,n.r,0,Math.PI*2); ctx.fill();
+    }
+    requestAnimationFrame(draw);
   }
   addEventListener('resize', resize);
-  resize(); requestAnimationFrame(render);
+  resize(); requestAnimationFrame(draw);
 })();
 
-/* UX: enable signup after delay (demo), animate status */
+/* Snowflakes */
 (function(){
-  const status = document.getElementById('status');
-  const email = document.getElementById('email');
-  const btn = document.getElementById('submitBtn');
-
-  // small timeline: pulsing then open after 10s
-  status.animate([{transform:'scale(1)'},{transform:'scale(1.06)'},{transform:'scale(1)'}],{duration:2000,iterations:Infinity});
-
-  setTimeout(()=>{
-    status.textContent = 'ANMÄLAN ÖPPEN';
-    status.style.background = 'linear-gradient(90deg,#2bffb3,#7df7ff)';
-    email.disabled = false;
-    btn.disabled = false;
-    btn.style.cursor = 'pointer';
-    btn.addEventListener('click', ()=> {
-      const val = email.value.trim();
-      if(!val) return alert('Ange en e‑postadress (demo).');
-      alert('Tack! (detta är en demo) — vi skickar info när bokningen öppnar.');
-    });
-  }, 10000);
-})();
-
-/* Accessibility: allow Enter to submit when enabled */
-document.addEventListener('keydown', (e)=>{
-  if(e.key==='Enter'){
-    const btn = document.getElementById('submitBtn');
-    if(!btn.disabled) btn.click();
+  const container = document.getElementById('snow');
+  const flakes = [];
+  const count = Math.min(120, Math.floor(window.innerWidth/8));
+  for(let i=0;i<count;i++){
+    const el = document.createElement('div');
+    el.className = 'flake';
+    el.innerHTML = '❄';
+    const size = (8 + Math.random()*20);
+    el.style.fontSize = size + 'px';
+    el.style.left = Math.random()*100 + '%';
+    el.style.top = (Math.random()*-120) + 'px';
+    el.style.opacity = 0.5 + Math.random()*0.9;
+    container.appendChild(el);
+    flakes.push({el, x:Math.random()*window.innerWidth, y:Math.random()*-window.innerHeight, vy:1+Math.random()*2, vx:(Math.random()-0.5)*0.6, rot: Math.random()*360, vr: (Math.random()-0.5)*0.6});
   }
-});
+
+  const start = performance.now();
+  function frame(now){
+    const t = (now - start)/1000;
+    for(const f of flakes){
+      f.y += f.vy;
+      f.x += Math.sin(t*0.5 + f.x*0.001)*0.6 + f.vx;
+      f.rot += f.vr;
+      if(f.y > window.innerHeight + 40){
+        f.y = -40;
+        f.x = Math.random()*window.innerWidth;
+      }
+      f.el.style.transform = `translate(${f.x}px, ${f.y}px) rotate(${f.rot}deg)`;
+    }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+  window.addEventListener('resize', ()=> location.reload());
+})();
 </script>
 </body>
 </html>
+```// filepath: untitled:Untitled

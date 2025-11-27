@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>STAR WARS‑mässan — Välkommen</title>
+<style>
+  :root{
+    --bg:#07060b;
+    --accent:#ffd24d;
+    --muted:#bfcad6;
+    --panel: rgba(255,255,255,0.03);
+  }
+
+  /* Bas */
+  html,body{height:100%;margin:0;font-family:Inter, "Segoe UI", Roboto, Arial, sans-serif;background:var(--bg);color:#fff;overflow:hidden}
+  .wrap{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:28px}
+
+  /* Stjärnfält (canvas ligger över hela bakgrunden) */
+  canvas#stars{position:fixed;inset:0;z-index:0;display:block}
+
+  /* Panel */
+  .card{
+    position:relative;z-index:2;
+    max-width:960px;width:95%;
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border-radius:12px;padding:28px 28px 36px;box-shadow:0 12px 40px rgba(0,0,0,0.6);
+    display:grid;grid-template-columns:1fr 320px;gap:24px;align-items:center;
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255,255,255,0.03);
+  }
+
+  /* Vänster: välkomnande / crawl-liknande text */
+  .welcome h1{
+    margin:0;font-weight:700;letter-spacing:2px;color:var(--accent);
+    font-size:40px;text-transform:uppercase;
+    font-family: "Trebuchet MS", Arial, sans-serif;
+  }
+  .welcome p.lead{
+    margin:10px 0 18px;color:var(--muted);font-size:16px;
+  }
+
+  .crawl-wrap{
+    perspective:900px;perspective-origin:50% 100%;
+    height:220px;overflow:hidden;margin-top:8px;
+  }
+  .crawl{
+    transform-origin:50% 100%;
+    transform:translateZ(-200px) rotateX(30deg) translateY(20px);
+    width:100%;color:#dbeeff;font-size:14px;line-height:1.6;text-align:center;
+    animation: crawlIn 12s linear infinite;
+  }
+  @keyframes crawlIn{
+    0%{transform:translateZ(-800px) rotateX(25deg) translateY(140%);opacity:0}
+    8%{opacity:1}
+    100%{transform:translateZ(400px) rotateX(25deg) translateY(-200%);opacity:0}
+  }
+
+  /* Höger: info / anmälan (stängd) */
+  .panel{
+    background:var(--panel);padding:18px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);
+  }
+  .panel h2{margin:0 0 8px 0;font-size:20px;color:#fff}
+  .soon{display:inline-block;background:#1b1b1b;padding:8px 10px;border-radius:999px;color:var(--accent);font-weight:700;margin-bottom:12px}
+  .info{color:var(--muted);font-size:14px;margin-bottom:14px}
+  .signup{
+    display:flex;gap:8px;align-items:center;
+  }
+  .signup input[type="email"]{flex:1;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#fff}
+  .signup button{padding:10px 14px;border-radius:8px;border:none;background:linear-gradient(90deg,#ffd24d,#ffb347);color:#08121a;font-weight:800;cursor:not-allowed;opacity:0.9}
+  .hint{font-size:12px;color:#9fb2c9;margin-top:10px}
+
+  /* dekorativa lightsaber-linjer */
+  .bar{
+    position:absolute;left:0;right:0;height:6px;bottom:0;z-index:1;
+    background:linear-gradient(90deg, rgba(255,210,77,0.06), rgba(255,210,77,0.12) 50%, rgba(255,210,77,0.06));
+    filter:blur(8px);
+  }
+
+  /* responsivt */
+  @media (max-width:880px){
+    .card{grid-template-columns:1fr;padding:18px}
+    .crawl-wrap{height:160px}
+    .panel{order:2}
+  }
+</style>
+</head>
+<body>
+<canvas id="stars" aria-hidden="true"></canvas>
+
+<div class="wrap" role="main">
+  <div class="card" aria-labelledby="title">
+    <div class="welcome">
+      <h1 id="title">Välkommen, gäst</h1>
+      <p class="lead">Till STAR WARS‑mässan — en galax full av fans, kostymer och äventyr.</p>
+
+      <div class="crawl-wrap" aria-hidden="false">
+        <div class="crawl" role="article" aria-label="Kort meddelande">
+          <p><strong>Observera:</strong> Anmälningen till STAR WARS‑mässan öppnar snart. Håll utkik efter ny information här och via våra officiella kanaler.</p>
+          <p>Förbered din bästa kostym, samla vännerna och gör dig redo för panelsamtal, utställare och interaktiva upplevelser. Vi ser fram emot att fira galaxens berättelser tillsammans.</p>
+        </div>
+      </div>
+    </div>
+
+    <aside class="panel" aria-labelledby="infoTitle">
+      <div class="soon">ÖPPNAR SNART</div>
+      <h2 id="infoTitle">Anmälan & Biljetter</h2>
+      <p class="info">Biljettsläpp och mer information publiceras inom kort. Skriv upp din e‑post för att få avisering när anmälan öppnar.</p>
+
+      <form class="signup" onsubmit="event.preventDefault()">
+        <input type="email" placeholder="Din e‑post" aria-label="E‑post" disabled>
+        <button type="submit" disabled>Anmäl</button>
+      </form>
+
+      <div class="hint">Prova att uppdatera sidan senare — eller följ våra sociala kanaler för snabba uppdateringar.</div>
+    </aside>
+
+    <div class="bar" aria-hidden="true"></div>
+  </div>
+</div>
+
+<script>
+/* Enkel stjärnfield canvas */
+(function(){
+  const canvas = document.getElementById('stars');
+  const ctx = canvas.getContext('2d');
+  let w,h,stars=[];
+  function resize(){ w=canvas.width=innerWidth; h=canvas.height=innerHeight; initStars(); }
+  function initStars(){
+    const count = Math.max(120, Math.floor(w/6));
+    stars = new Array(count).fill(0).map(()=>{
+      return {
+        x: Math.random()*w,
+        y: Math.random()*h,
+        z: 0.2 + Math.random()*0.8,
+        r: 0.4 + Math.random()*1.6,
+        vx: (Math.random()-0.5)*0.04
+      };
+    });
+  }
+  function draw(){
+    ctx.clearRect(0,0,w,h);
+    // mild gradient
+    const g = ctx.createLinearGradient(0,0,0,h);
+    g.addColorStop(0, "rgba(6,10,18,0.7)");
+    g.addColorStop(1, "rgba(2,2,6,0.9)");
+    ctx.fillStyle = g;
+    ctx.fillRect(0,0,w,h);
+
+    // stars
+    for(const s of stars){
+      s.x += s.vx;
+      s.y += 0.2 + s.z*0.6;
+      if(s.y > h + 10){ s.y = -10; s.x = Math.random()*w; }
+      if(s.x < -10) s.x = w+10;
+      if(s.x > w+10) s.x = -10;
+      ctx.beginPath();
+      const alpha = 0.6 + 0.4*Math.random()*s.z;
+      ctx.fillStyle = `rgba(255,255,255,${alpha.toFixed(2)})`;
+      ctx.arc(s.x, s.y, s.r * (1 + s.z*1.7), 0, Math.PI*2);
+      ctx.fill();
+    }
+    requestAnimationFrame(draw);
+  }
+  addEventListener('resize', resize);
+  resize(); draw();
+})();
+
+/* Liten interaktiv hint: visa notis när anmälan öppnar (demo) */
+(function(){
+  // Demo: efter 10 sek visar vi meddelande (byts ut i verkligheten)
+  setTimeout(()=>{
+    const soon = document.querySelector('.soon');
+    if(!soon) return;
+    soon.textContent = 'ANMÄLAN ÖPPEN';
+    soon.style.background = 'linear-gradient(90deg,#2bffb3,#7df7ff)';
+    document.querySelectorAll('.signup input, .signup button').forEach(el=>{
+      el.disabled = false;
+      el.placeholder = el.type === 'email' ? 'example@exempel.se' : el.placeholder;
+      el.style.cursor = 'text';
+      el.style.opacity = 1;
+      el.style.transition = 'opacity 300ms';
+    });
+    const btn = document.querySelector('.signup button');
+    btn.style.cursor = 'pointer';
+    btn.addEventListener('click', ()=>{
+      alert('Tack! (detta är en demo) — anmälan hanteras via officiella kanaler.');
+    });
+  }, 10000);
+})();
+</script>
+</body>
+</html>

@@ -1,262 +1,318 @@
+// ...existing code...
 <!doctype html>
 <html lang="sv">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>AI Workshop — Anmälan öppnar 18 dec | Event 11 jan 2026</title>
-<link rel="stylesheet" href="style.css">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg1:#050816;
+    --bg2:#08102a;
+    --accent:#4ef1c3;
+    --accent-2:#7ad0ff;
+    --muted:#9fb3c9;
+    --card: rgba(255,255,255,0.03);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial; background:linear-gradient(180deg,var(--bg1),var(--bg2)); color:#e6f0f8; -webkit-font-smoothing:antialiased;}
+  .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:36px;position:relative;overflow:hidden}
+  .grid {
+    position:fixed;inset:0;z-index:0;pointer-events:none;background:
+      radial-gradient(1200px 400px at 10% 10%, rgba(78,241,195,0.03), transparent),
+      radial-gradient(800px 300px at 90% 80%, rgba(122,208,255,0.03), transparent);
+  }
+  canvas#net{position:fixed;inset:0;z-index:0;pointer-events:none}
+
+  .card{
+    position:relative;z-index:2;width:min(1100px,96%);max-width:1100px;border-radius:14px;padding:28px;display:grid;grid-template-columns:1fr 380px;gap:22px;
+    background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.03);
+    box-shadow:0 18px 60px rgba(3,6,12,0.6);backdrop-filter: blur(6px) saturate(120%);
+  }
+  header h1{ font-family:Orbitron, sans-serif; font-weight:700; color:var(--accent); margin:0; font-size:36px; letter-spacing:1px;}
+  header p.lead{margin:8px 0 18px;color:var(--muted);font-size:15px}
+
+  .meta{display:flex;flex-direction:column;gap:12px}
+  .meta .box{background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005)); padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.02)}
+  .meta .box strong{display:block;color:var(--accent-2);font-weight:700}
+  .meta .when{font-size:14px;color:#d7eef7}
+
+  .speakers{display:grid;grid-template-columns:1fr;gap:14px;margin-top:8px}
+  .speaker{display:flex;gap:14px;align-items:flex-start;background:rgba(255,255,255,0.01);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.02)}
+  .avatar{width:84px;height:84px;border-radius:12px;flex:0 0 84px;display:block;object-fit:cover;border:1px solid rgba(255,255,255,0.04);box-shadow:0 8px 22px rgba(0,0,0,0.45)}
+  .smeta{font-size:13px;color:var(--muted)}
+  .talk{font-size:14px;color:#eaf8f3;margin-top:8px}
+
+  aside.panel{padding:18px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.008));border:1px solid rgba(255,255,255,0.03);display:flex;flex-direction:column;gap:12px}
+  .status{display:inline-block;padding:8px 12px;border-radius:999px;background:linear-gradient(90deg,#ffd24d,#ffb347);color:#04121a;font-weight:700;align-self:flex-start}
+  .countdown{font-family:Orbitron, monospace;color:var(--accent);font-size:20px;letter-spacing:1px}
+  label{font-size:13px;color:var(--muted);display:block;margin-bottom:6px}
+  input[type="text"], input[type="email"]{
+    width:100%;padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#e6f0f8;font-size:14px;
+  }
+  .btn{
+    display:inline-flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;border:none;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#041826;font-weight:800;cursor:pointer;
+  }
+  .btn[disabled]{opacity:0.7;cursor:not-allowed;filter:grayscale(0.12)}
+
+  .note{font-size:13px;color:var(--muted)}
+  footer{font-size:13px;color:var(--muted);margin-top:8px}
+
+  .snow-layer{position:fixed;inset:0;pointer-events:none;z-index:3}
+  .flake{position:absolute;color:white;font-size:18px;opacity:0.85;filter:drop-shadow(0 2px 6px rgba(0,0,0,0.6))}
+
+  /* Agenda styling */
+  .agenda{margin-top:12px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.02)}
+  .agenda h4{margin:0 0 8px 0;color:var(--accent-2)}
+  .agenda .item{display:flex;gap:12px;padding:8px 0;border-top:1px dashed rgba(255,255,255,0.02);font-size:14px}
+  .agenda .item:first-of-type{border-top:0;padding-top:0}
+  .time{font-family:Orbitron, monospace;color:var(--accent);width:110px;flex:0 0 110px}
+
+  @media (max-width:980px){
+    .card{grid-template-columns:1fr; padding:18px}
+    aside.panel{order:2}
+  }
+</style>
 </head>
 <body>
-  <div class="grid" aria-hidden="true"></div>
-  <canvas id="net" aria-hidden="true"></canvas>
-  <div class="snow-layer" id="snow" aria-hidden="true"></div>
+  <div class="grid" aria-hidden="true"></div>
+  <canvas id="net" aria-hidden="true"></canvas>
+  <div class="snow-layer" id="snow" aria-hidden="true"></div>
 
-  <main class="wrap" role="main" aria-labelledby="pageTitle">
-    <section class="card" aria-describedby="intro">
-      <div>
-        <header>
-          <h1 id="pageTitle">AI Workshop: Från idé till praktisk nytta</h1>
-          <p id="intro" class="lead">En kvällsession om hur organisationer kan använda modern AI för verklig nytta. Anmälningen öppnar 18 december. Eventet hålls 11 januari 2026 kl. 17:00–20:00.</p>
-        </header>
+  <main class="wrap" role="main" aria-labelledby="pageTitle">
+    <section class="card" aria-describedby="intro">
+      <div>
+        <header>
+          <h1 id="pageTitle">AI Workshop: Från idé till praktisk nytta</h1>
+          <p id="intro" class="lead">En kvällsession om hur organisationer kan använda modern AI för verklig nytta. Anmälningen öppnar 18 december. Eventet hålls 11 januari 2026 kl. 17:00–20:00.</p>
+        </header>
 
-        <div class="image-slots">
-          <div id="img1" class="image-slot">
-            <div style="font-weight:700">Bild 1: AI i Praktiken</div>
-            <div style="margin-top:5px;font-size:11px;">(Sökväg: C:\Users\stank\Downloads\unnamed.jpg)</div>
+        <div class="meta">
+          <div class="box">
+            <strong>Event:</strong>
+            <div class="when">AI i praktiken — så får du verklig nytta av modern IT i din organisation</div>
+            <div class="when" style="margin-top:6px"><strong>Datum:</strong> 11/1 - 2026</div>
+            <div class="when"><strong>Tid:</strong> 17.00 - 20.00</div>
           </div>
-          <div id="img2" class="image-slot">
-            <div style="font-weight:700">Bild 2: Produktivitetscoach</div>
-            <div style="margin-top:5px;font-size:11px;">(Sökväg: C:\Users\stank\Downloads\unnamed2.jpg)</div>
-          </div>
-          <div id="img3" class="image-slot">
-            <div style="font-weight:700">Bild 3: Kreativ Revolution</div>
-            <div style="margin-top:5px;font-size:11px;">(Sökväg: C:\Users\stank\Downloads\unnamed3.jpg)</div>
-          </div>
-        </div>
-        
-        <div class="meta" style="margin-top:15px">
-          <div class="box">
-            <strong>Event:</strong>
-            <div class="when">AI i praktiken — så får du verklig nytta av modern IT i din organisation</div>
-            <div class="when" style="margin-top:6px"><strong>Datum:</strong> 11/1 - 2026</div>
-            <div class="when"><strong>Tid:</strong> 17.00 - 20.00</div>
-          </div>
 
           <div class="box" style="display:flex;gap:12px;flex-direction:column">
-            <strong>Agenda:</strong>
-            <div class="agenda-list">
-                <div><strong>17:00–17:05</strong> Introduktion (Kort presentation av kvällens upplägg och talare.)</div>
-                <div><strong>17:05–17:35</strong> Människan i en AI-driven arbetsmiljö (Professor Christian Shultz)</div>
-                <div><strong>17:35–18:05</strong> AI som produktivitetscoach (Dr. Elara Jönsson)</div>
-                <div><strong>18:05–18:35</strong> Den kreativa revolutionen (Marcus Dahlgren)</div>
-                <div><strong>18:35–19:20</strong> Paneldiskussion (Talarna diskuterar långsiktig nytta av AI. Publikfrågor välkomnas.)</div>
-                <div><strong>19:20–19:30</strong> Paus</div>
-                <div><strong>19:30–20:00</strong> Praktisk workshop (Konkreta verktyg, tekniker och exempel för att komma igång direkt.)</div>
+            <strong>Föreläsare</strong>
+            <div class="speakers" aria-label="Föreläsare">
+              <!-- Christian Shultz (bild istället för box) -->
+              <div class="speaker">
+                <img class="avatar" src='data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160"><defs><linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="%234ef1c3"/><stop offset="1" stop-color="%237ad0ff"/></linearGradient></defs><rect width="100%" height="100%" rx="12" fill="url(%23g1)"/><text x="50%" y="55%" font-family="Orbitron, sans-serif" font-size="48" fill="%23041226" text-anchor="middle" dominant-baseline="middle">CS</text></svg>' alt="Christian Shultz">
+                <div>
+                  <div style="font-weight:700">Christian Shultz</div>
+                  <div class="smeta">Forskare inom artificiell intelligens och kognitionsvetenskap</div>
+                  <div class="talk">
+                    Professor Christian Shultz forskning handlar om hur människor och artificiell intelligence bearbetar och använder information, och hur ett hållbart, långsiktigt samspel mellan människor och hur IT fungerar.
+                  </div>
+                </div>
+              </div>
+
+              <!-- Dr. Elara Jönsson -->
+              <div class="speaker">
+                <img class="avatar" src='data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160"><defs><linearGradient id="g2" x1="0" x2="1"><stop offset="0" stop-color="%237ad0ff"/><stop offset="1" stop-color="%234ef1c3"/></linearGradient></defs><rect width="100%" height="100%" rx="12" fill="url(%23g2)"/><text x="50%" y="55%" font-family="Orbitron, sans-serif" font-size="36" fill="%23041226" text-anchor="middle" dominant-baseline="middle">EJ</text></svg>' alt="Dr. Elara Jönsson">
+                <div>
+                  <div style="font-weight:700">Dr. Elara Jönsson</div>
+                  <div class="smeta">Kognitionsvetare · Expert på Människa‑AI‑Interaktion</div>
+                  <div class="talk">"AI som din personliga produktivitetscoach: Från e-post till brainstorming." Kognitionsvetare och Expert på Människa-AI-Interaktion. Hon fokuserar på praktisk tillämpning av generativ AI i professionella och personliga rutiner. Hon har erfarenhet av att utbilda icke-tekniska team i AI-verktyg.</div>
+                </div>
+              </div>
+
+              <!-- Marcus Dahlgren -->
+              <div class="speaker">
+                <img class="avatar" src='data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160"><defs><linearGradient id="g3" x1="0" x2="1"><stop offset="0" stop-color="%23ffd24d"/><stop offset="1" stop-color="%23ffb347"/></linearGradient></defs><rect width="100%" height="100%" rx="12" fill="url(%23g3)"/><text x="50%" y="55%" font-family="Orbitron, sans-serif" font-size="36" fill="%23041226" text-anchor="middle" dominant-baseline="middle">MD</text></svg>' alt="Marcus Dahlgren">
+                <div>
+                  <div style="font-weight:700">Marcus Dahlgren</div>
+                  <div class="smeta">Digital strateg · Kreativ teknikpionjär</div>
+                  <div class="talk">"Den kreativa revolutionen: Hur AI-verktyg omformar design och idégenerering." Digital Strateg och Kreativ Teknikpionjär. Marcus har en bakgrund inom marknadsföring och design och driver ett konsultföretag som hjälper varumärken att integrera AI för bildskapande, textgenerering och innehållsplanering.</div>
+                </div>
+              </div>
             </div>
+
+            <!-- Agenda -->
+            <div class="agenda" aria-label="Agenda">
+              <h4>Agenda</h4>
+              <div class="item"><div class="time">17:00–17:05</div><div><strong>Introduktion</strong><div>Kort presentation av kvällens upplägg och talare.</div></div></div>
+              <div class="item"><div class="time">17:05–17:35</div><div><strong>Människan i en AI-driven arbetsmiljö</strong><div>Professor Christian Shultz — Hur människor och AI bearbetar information och hur organisationer skapar hållbara arbetssätt med AI.</div></div></div>
+              <div class="item"><div class="time">17:35–18:05</div><div><strong>AI som produktivitetscoach</strong><div>Dr. Elara Jönsson — Praktiska exempel på hur AI effektiviserar vardagsuppgifter och stödjer team.</div></div></div>
+              <div class="item"><div class="time">18:05–18:35</div><div><strong>Den kreativa revolutionen</strong><div>Marcus Dahlgren — Hur AI förändrar design, kommunikation och idégenerering.</div></div></div>
+              <div class="item"><div class="time">18:35–19:20</div><div><strong>Paneldiskussion</strong><div>Talarna diskuterar hur man får verklig och långsiktig nytta av AI i organisationer. Publikfrågor välkomnas.</div></div></div>
+              <div class="item"><div class="time">19:20–19:30</div><div><strong>Paus</strong></div></div>
+              <div class="item"><div class="time">19:30–20:00</div><div><strong>Praktisk workshop</strong><div>Konkreta verktyg, tekniker och exempel för att komma igång direkt.</div></div></div>
+            </div>
+
+          </div>
+        </div>
+
+        <footer>
+          <div class="note">Plats och praktisk information skickas till anmälda deltagare via e-post.</div>
+        </footer>
+      </div>
+
+      <aside class="panel" aria-labelledby="regTitle">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+          <div>
+            <div class="status" id="statusPill">ANMÄLAN STÄNGD</div>
+            <div style="font-size:13px;color:var(--muted);margin-top:6px" id="openHint">Öppnar 18 december</div>
+          </div>
+          <div class="countdown" id="countdown" aria-live="polite">--:--:--</div>
+        </div>
+
+        <h3 id="regTitle" style="margin:6px 0 0 0">Anmälan</h3>
+        <div class="note">Fyll i uppgifter nedan. Anmälan öppnar automatiskt vid angiven tidpunkt.</div>
+
+        <form id="regForm" onsubmit="return false" aria-label="Registreringsformulär">
+          <label for="name">Namn</label>
+          <input id="name" type="text" placeholder="För- och efternamn" disabled>
+
+          <label for="email">E‑post</label>
+          <input id="email" type="email" placeholder="din@epost.se" disabled>
+
+          <label for="org">Organisation (valfritt)</label>
+          <input id="org" type="text" placeholder="Företag / organisation" disabled>
+
+          <div style="margin-top:10px;display:flex;gap:8px;">
+            <button id="submitBtn" class="btn" disabled><span>Anmäl</span></button>
+            <button id="demoBtn" type="button" class="btn" style="background:linear-gradient(90deg,#2bffb3,#7df7ff);color:#04121a" title="Demo" onclick="alert('Detta är en demo — verklig anmälan öppnar 18 december.')" >Demo</button>
           </div>
 
-          <div class="box" style="display:flex;gap:12px;flex-direction:column">
-            <strong>Föreläsare</strong>
-            <div class="speakers" aria-label="Föreläsare">
-              <div class="speaker">
-                <div class="avatar">CS</div>
-                <div>
-                  <div style="font-weight:700">Christian Shultz</div>
-                  <div class="smeta">Forskare inom artificiell intelligens och kognitionsvetenskap</div>
-                  <div class="talk">Christian forskar på hur människor och AI bearbetar och använder information för hållbara, långsiktiga samspel mellan människor och IT.</div>
-                </div>
-              </div>
-
-              <div class="speaker">
-                <div class="avatar">EJ</div>
-                <div>
-                  <div style="font-weight:700">Dr. Elara Jönsson</div>
-                  <div class="smeta">Kognitionsvetare · Expert på Människa‑AI‑Interaktion</div>
-                  <div class="talk">"AI som din personliga produktivitetscoach: Från e-post till brainstorming." Praktiska tillämpningar av generativ AI för vardagligt och professionellt bruk.</div>
-                </div>
-              </div>
-
-              <div class="speaker">
-                <div class="avatar">MD</div>
-                <div>
-                  <div style="font-weight:700">Marcus Dahlgren</div>
-                  <div class="smeta">Digital strateg · Kreativ teknikpionjär</div>
-                  <div class="talk">"Den kreativa revolutionen: Hur AI-verktyg omformar design och idégenerering." Marcus hjälper varumärken att integrera AI för bildskapande och innehållsplanering.</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <footer>
-          <div class="note">Plats och praktisk information skickas till anmälda deltagare via e-post.</div>
-        </footer>
-      </div>
-
-      <aside class="panel" aria-labelledby="regTitle">
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
-          <div>
-            <div class="status" id="statusPill">ANMÄLAN STÄNGD</div>
-            <div style="font-size:13px;color:var(--muted);margin-top:6px" id="openHint">Öppnar 18 december</div>
-          </div>
-          <div class="countdown" id="countdown" aria-live="polite">--:--:--</div>
-        </div>
-
-        <h3 id="regTitle" style="margin:6px 0 0 0">Anmälan</h3>
-        <div class="note">Fyll i uppgifter nedan. Anmälan öppnar automatiskt vid angiven tidpunkt.</div>
-
-        <form id="regForm" onsubmit="return false" aria-label="Registreringsformulär">
-          <label for="name">Namn</label>
-          <input id="name" type="text" placeholder="För- och efternamn" disabled>
-
-          <label for="email">E‑post</label>
-          <input id="email" type="email" placeholder="din@epost.se" disabled>
-
-          <label for="org">Organisation (valfritt)</label>
-          <input id="org" type="text" placeholder="Företag / organisation" disabled>
-
-          <div style="margin-top:10px;display:flex;gap:8px;">
-            <button id="submitBtn" class="btn" disabled><span>Anmäl</span></button>
-            <button id="demoBtn" type="button" class="btn" style="background:linear-gradient(90deg,#2bffb3,#7df7ff);color:#04121a" title="Demo" onclick="alert('Detta är en demo — verklig anmälan öppnar 18 december.')" >Demo</button>
-          </div>
-
-          <div style="margin-top:8px;font-size:13px;color:var(--muted)">Event: 11 jan 2026 • 17:00–20:00</div>
-        </form>
-      </aside>
-    </section>
-  </main>
+          <div style="margin-top:8px;font-size:13px;color:var(--muted)">Event: 11 jan 2026 • 17:00–20:00</div>
+        </form>
+      </aside>
+    </section>
+  </main>
 
 <script>
 /* Registration opening logic */
 (function(){
-  const openDate = new Date(2025, 11, 18, 0, 0, 0); // 2025-12-18 local time (month index 11 = December)
-  const formEls = { name: document.getElementById('name'), email: document.getElementById('email'), org: document.getElementById('org'), btn: document.getElementById('submitBtn'), status: document.getElementById('statusPill'), hint: document.getElementById('openHint'), countdown: document.getElementById('countdown')};
+  const openDate = new Date(2025, 11, 18, 0, 0, 0); // 2025-12-18 local time
+  const formEls = { name: document.getElementById('name'), email: document.getElementById('email'), org: document.getElementById('org'), btn: document.getElementById('submitBtn'), status: document.getElementById('statusPill'), hint: document.getElementById('openHint'), countdown: document.getElementById('countdown')};
 
-  function update(){
-    const now = new Date();
-    const diff = openDate - now;
-    if(diff <= 0){
-      enableForm();
-      formEls.countdown.textContent = 'OPEN';
-      return;
-    }
-    const d = Math.floor(diff / (1000*60*60*24));
-    const h = Math.floor((diff/(1000*60*60))%24);
-    const m = Math.floor((diff/(1000*60))%60);
-    const s = Math.floor((diff/1000)%60);
-    formEls.countdown.textContent = `${String(d).padStart(2,'0')}d ${String(h).padStart(2,'0')}h`;
-    formEls.hint.textContent = `Öppnar ${openDate.toLocaleDateString('sv-SE')}`;
-  }
+  function update(){
+    const now = new Date();
+    const diff = openDate - now;
+    if(diff <= 0){
+      enableForm();
+      formEls.countdown.textContent = 'OPEN';
+      return;
+    }
+    const d = Math.floor(diff / (1000*60*60*24));
+    const h = Math.floor((diff/(1000*60*60))%24);
+    const m = Math.floor((diff/(1000*60))%60);
+    const s = Math.floor((diff/1000)%60);
+    formEls.countdown.textContent = `${String(d).padStart(2,'0')}d ${String(h).padStart(2,'0')}h`;
+    formEls.hint.textContent = `Öppnar ${openDate.toLocaleDateString('sv-SE')}`;
+  }
 
-  function enableForm(){
-    formEls.status.textContent = 'ANMÄLAN ÖPPEN';
-    formEls.status.style.background = 'linear-gradient(90deg,#2bffb3,#7df7ff)';
-    formEls.hint.textContent = 'Anmälan är öppen';
-    formEls.name.disabled = false;
-    formEls.email.disabled = false;
-    formEls.org.disabled = false;
-    formEls.btn.disabled = false;
-    formEls.btn.addEventListener('click', submit);
-  }
+  function enableForm(){
+    formEls.status.textContent = 'ANMÄLAN ÖPPEN';
+    formEls.status.style.background = 'linear-gradient(90deg,#2bffb3,#7df7ff)';
+    formEls.hint.textContent = 'Anmälan är öppen';
+    formEls.name.disabled = false;
+    formEls.email.disabled = false;
+    formEls.org.disabled = false;
+    formEls.btn.disabled = false;
+    formEls.btn.addEventListener('click', submit);
+  }
 
-  function submit(){
-    const name = formEls.name.value.trim();
-    const email = formEls.email.value.trim();
-    if(!name || !email) { alert('Ange namn och e‑post.'); return; }
-    // Demo: visa bekräftelse. I produktion skicka till server.
-    alert(`Tack för din anmälan, ${name}!\nVi skickar detaljer till ${email}.`);
-    formEls.name.value=''; formEls.email.value=''; formEls.org.value='';
-  }
+  function submit(){
+    const name = formEls.name.value.trim();
+    const email = formEls.email.value.trim();
+    if(!name || !email) { alert('Ange namn och e‑post.'); return; }
+    alert(`Tack för din anmälan, ${name}!\nVi skickar detaljer till ${email}.`);
+    formEls.name.value=''; formEls.email.value=''; formEls.org.value='';
+  }
 
-  update();
-  const int = setInterval(()=> {
-    update();
-    if(new Date() >= openDate) clearInterval(int);
-  }, 1000 * 30); // uppdatera var 30s
+  update();
+  const int = setInterval(()=> {
+    update();
+    if(new Date() >= openDate) clearInterval(int);
+  }, 1000 * 30);
 })();
 
 /* Simple neural net canvas background (nodes + links) */
 (function(){
-  const canvas = document.getElementById('net');
-  const ctx = canvas.getContext('2d');
-  let W,H, nodes = [];
-  function resize(){ W = canvas.width = innerWidth; H = canvas.height = innerHeight; initNodes(); }
-  function initNodes(){
-    nodes = [];
-    const count = Math.max(18, Math.floor(W/140));
-    for(let i=0;i<count;i++){
-      nodes.push({x: Math.random()*W, y: Math.random()*H, r: 1.2 + Math.random()*2.4, vx:(Math.random()-0.5)*0.3, vy:(Math.random()-0.5)*0.3});
-    }
-  }
-  function draw(t){
-    ctx.clearRect(0,0,W,H);
-    // connect
-    for(let i=0;i<nodes.length;i++){
-      for(let j=i+1;j<nodes.length;j++){
-        const a = nodes[i], b = nodes[j];
-        const dx = a.x-b.x, dy = a.y-b.y;
-        const dist = Math.hypot(dx,dy);
-        if(dist < 220){
-          ctx.strokeStyle = `rgba(126,208,255,${Math.max(0,0.08 - dist/1500)})`;
-          ctx.lineWidth = 1;
-          ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
-        }
-      }
-    }
-    // nodes
-    for(const n of nodes){
-      n.x += n.vx; n.y += n.vy;
-      if(n.x < 0 || n.x > W) n.vx *= -1;
-      if(n.y < 0 || n.y > H) n.vy *= -1;
-      const g = ctx.createRadialGradient(n.x,n.y,0,n.x,n.y,12);
-      g.addColorStop(0, 'rgba(78,241,195,0.9)');
-      g.addColorStop(1, 'rgba(78,241,195,0.05)');
-      ctx.fillStyle = g;
-      ctx.beginPath(); ctx.arc(n.x,n.y,n.r,0,Math.PI*2); ctx.fill();
-    }
-    requestAnimationFrame(draw);
-  }
-  addEventListener('resize', resize);
-  resize(); requestAnimationFrame(draw);
+  const canvas = document.getElementById('net');
+  const ctx = canvas.getContext('2d');
+  let W,H, nodes = [];
+  function resize(){ W = canvas.width = innerWidth; H = canvas.height = innerHeight; initNodes(); }
+  function initNodes(){
+    nodes = [];
+    const count = Math.max(18, Math.floor(W/140));
+    for(let i=0;i<count;i++){
+      nodes.push({x: Math.random()*W, y: Math.random()*H, r: 1.2 + Math.random()*2.4, vx:(Math.random()-0.5)*0.3, vy:(Math.random()-0.5)*0.3});
+    }
+  }
+  function draw(t){
+    ctx.clearRect(0,0,W,H);
+    for(let i=0;i<nodes.length;i++){
+      for(let j=i+1;j<nodes.length;j++){
+        const a = nodes[i], b = nodes[j];
+        const dx = a.x-b.x, dy = a.y-b.y;
+        const dist = Math.hypot(dx,dy);
+        if(dist < 220){
+          ctx.strokeStyle = `rgba(126,208,255,${Math.max(0,0.08 - dist/1500)})`;
+          ctx.lineWidth = 1;
+          ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
+        }
+      }
+    }
+    for(const n of nodes){
+      n.x += n.vx; n.y += n.vy;
+      if(n.x < 0 || n.x > W) n.vx *= -1;
+      if(n.y < 0 || n.y > H) n.vy *= -1;
+      const g = ctx.createRadialGradient(n.x,n.y,0,n.x,n.y,12);
+      g.addColorStop(0, 'rgba(78,241,195,0.9)');
+      g.addColorStop(1, 'rgba(78,241,195,0.05)');
+      ctx.fillStyle = g;
+      ctx.beginPath(); ctx.arc(n.x,n.y,n.r,0,Math.PI*2); ctx.fill();
+    }
+    requestAnimationFrame(draw);
+  }
+  addEventListener('resize', resize);
+  resize(); requestAnimationFrame(draw);
 })();
 
 /* Snowflakes */
 (function(){
-  const container = document.getElementById('snow');
-  const flakes = [];
-  const count = Math.min(120, Math.floor(window.innerWidth/8));
-  for(let i=0;i<count;i++){
-    const el = document.createElement('div');
-    el.className = 'flake';
-    el.innerHTML = '❄';
-    const size = (8 + Math.random()*20);
-    el.style.fontSize = size + 'px';
-    el.style.left = Math.random()*100 + '%';
-    el.style.top = (Math.random()*-120) + 'px';
-    el.style.opacity = 0.5 + Math.random()*0.9;
-    container.appendChild(el);
-    flakes.push({el, x:Math.random()*window.innerWidth, y:Math.random()*-window.innerHeight, vy:1+Math.random()*2, vx:(Math.random()-0.5)*0.6, rot: Math.random()*360, vr: (Math.random()-0.5)*0.6});
-  }
+  const container = document.getElementById('snow');
+  const flakes = [];
+  const count = Math.min(120, Math.floor(window.innerWidth/8));
+  for(let i=0;i<count;i++){
+    const el = document.createElement('div');
+    el.className = 'flake';
+    el.innerHTML = '❄';
+    const size = (8 + Math.random()*20);
+    el.style.fontSize = size + 'px';
+    el.style.left = Math.random()*100 + '%';
+    el.style.top = (Math.random()*-120) + 'px';
+    el.style.opacity = 0.5 + Math.random()*0.9;
+    container.appendChild(el);
+    flakes.push({el, x:Math.random()*window.innerWidth, y:Math.random()*-window.innerHeight, vy:1+Math.random()*2, vx:(Math.random()-0.5)*0.6, rot: Math.random()*360, vr: (Math.random()-0.5)*0.6});
+  }
 
-  const start = performance.now();
-  function frame(now){
-    const t = (now - start)/1000;
-    for(const f of flakes){
-      f.y += f.vy;
-      f.x += Math.sin(t*0.5 + f.x*0.001)*0.6 + f.vx;
-      f.rot += f.vr;
-      if(f.y > window.innerHeight + 40){
-        f.y = -40;
-        f.x = Math.random()*window.innerWidth;
-      }
-      f.el.style.transform = `translate(${f.x}px, ${f.y}px) rotate(${f.rot}deg)`;
-    }
-    requestAnimationFrame(frame);
-  }
-  requestAnimationFrame(frame);
-  window.addEventListener('resize', ()=> location.reload());
+  const start = performance.now();
+  function frame(now){
+    const t = (now - start)/1000;
+    for(const f of flakes){
+      f.y += f.vy;
+      f.x += Math.sin(t*0.5 + f.x*0.001)*0.6 + f.vx;
+      f.rot += f.vr;
+      if(f.y > window.innerHeight + 40){
+        f.y = -40;
+        f.x = Math.random()*window.innerWidth;
+      }
+      f.el.style.transform = `translate(${f.x}px, ${f.y}px) rotate(${f.rot}deg)`;
+    }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+  window.addEventListener('resize', ()=> location.reload());
 })();
 </script>
 </body>
 </html>
+// ...existing code...

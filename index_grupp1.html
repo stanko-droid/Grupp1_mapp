@@ -1,193 +1,243 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="sv">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>STAR WARS‑mässan — Välkommen</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#07060b;
+    --bg-1:#03060b;
+    --bg-2:#071426;
+    --nebula-1: #08121a;
     --accent:#ffd24d;
-    --muted:#bfcad6;
-    --panel: rgba(255,255,255,0.03);
+    --muted:#b7c7d6;
+    --card: rgba(255,255,255,0.03);
+    --glass: rgba(255,255,255,0.04);
+    --glass-strong: rgba(255,255,255,0.06);
   }
 
-  /* Bas */
-  html,body{height:100%;margin:0;font-family:Inter, "Segoe UI", Roboto, Arial, sans-serif;background:var(--bg);color:#fff;overflow:hidden}
-  .wrap{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:28px}
+  /* Reset & layout */
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;font-family:Roboto, system-ui, -apple-system, "Segoe UI", sans-serif;background:linear-gradient(180deg,var(--bg-1),var(--bg-2));color:#fff;overflow:hidden}
+  .stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:28px;z-index:1}
 
-  /* Stjärnfält (canvas ligger över hela bakgrunden) */
-  canvas#stars{position:fixed;inset:0;z-index:0;display:block}
-
-  /* Panel */
+  /* wrapper card */
   .card{
-    position:relative;z-index:2;
-    max-width:960px;width:95%;
+    width:min(1100px,96%); max-width:1100px; border-radius:16px; padding:28px; position:relative;
+    display:grid; grid-template-columns: 1fr 360px; gap:26px; align-items:center;
     background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-    border-radius:12px;padding:28px 28px 36px;box-shadow:0 12px 40px rgba(0,0,0,0.6);
-    display:grid;grid-template-columns:1fr 320px;gap:24px;align-items:center;
-    backdrop-filter: blur(4px);
+    box-shadow: 0 12px 50px rgba(3,6,12,0.6), inset 0 1px 0 rgba(255,255,255,0.02);
+    backdrop-filter: blur(6px) saturate(120%);
     border: 1px solid rgba(255,255,255,0.03);
   }
 
-  /* Vänster: välkomnande / crawl-liknande text */
-  .welcome h1{
-    margin:0;font-weight:700;letter-spacing:2px;color:var(--accent);
-    font-size:40px;text-transform:uppercase;
-    font-family: "Trebuchet MS", Arial, sans-serif;
+  /* left content - cinematic header & crawl */
+  .left h1{
+    margin:0; font-family:Orbitron, sans-serif; font-weight:700; letter-spacing:2px;
+    font-size:44px; color:var(--accent); text-transform:uppercase; text-shadow:0 6px 30px rgba(0,0,0,0.6);
   }
-  .welcome p.lead{
-    margin:10px 0 18px;color:var(--muted);font-size:16px;
+  .lead{margin:10px 0 18px;color:var(--muted);font-size:15px}
+  .logo-row{display:flex;align-items:center;gap:12px}
+  .emblem{
+    width:64px;height:64px;border-radius:10px;background:linear-gradient(180deg,#0b1630,#061022);
+    display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(0,0,0,0.6);
+    border:1px solid rgba(255,255,255,0.04);
   }
+  .emblem::after{content:'★';font-size:28px;color:var(--accent);opacity:0.95;filter:drop-shadow(0 6px 12px rgba(255,210,77,0.07))}
 
-  .crawl-wrap{
-    perspective:900px;perspective-origin:50% 100%;
-    height:220px;overflow:hidden;margin-top:8px;
-  }
+  /* crawl */
+  .crawl-shell{height:240px;overflow:hidden;perspective:900px;margin-top:8px;border-radius:10px;}
   .crawl{
-    transform-origin:50% 100%;
-    transform:translateZ(-200px) rotateX(30deg) translateY(20px);
-    width:100%;color:#dbeeff;font-size:14px;line-height:1.6;text-align:center;
-    animation: crawlIn 12s linear infinite;
+    color:#dbeeff;font-size:15px;line-height:1.6;text-align:center;transform-origin:50% 100%;
+    transform: translateZ(-600px) rotateX(25deg) translateY(140%);
+    animation: crawl 14s linear infinite;
+    padding:18px 28px;
+    background: linear-gradient(180deg, rgba(8,12,18,0.0), rgba(8,12,18,0.02));
+    border-radius:8px;
   }
-  @keyframes crawlIn{
-    0%{transform:translateZ(-800px) rotateX(25deg) translateY(140%);opacity:0}
-    8%{opacity:1}
-    100%{transform:translateZ(400px) rotateX(25deg) translateY(-200%);opacity:0}
+  @keyframes crawl{
+    0%{transform: translateZ(-600px) rotateX(25deg) translateY(140%);opacity:0}
+    6%{opacity:1}
+    100%{transform: translateZ(260px) rotateX(25deg) translateY(-260%);opacity:0}
   }
 
-  /* Höger: info / anmälan (stängd) */
+  /* right panel - signup */
   .panel{
-    background:var(--panel);padding:18px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);
+    background: linear-gradient(180deg, rgba(255,255,255,0.018), rgba(255,255,255,0.012));
+    padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.03);
+    display:flex;flex-direction:column;gap:12px;
   }
-  .panel h2{margin:0 0 8px 0;font-size:20px;color:#fff}
-  .soon{display:inline-block;background:#1b1b1b;padding:8px 10px;border-radius:999px;color:var(--accent);font-weight:700;margin-bottom:12px}
-  .info{color:var(--muted);font-size:14px;margin-bottom:14px}
+  .status{display:inline-block;padding:8px 12px;border-radius:999px;font-weight:700;color:#08121a;background:linear-gradient(90deg,#ffd24d,#ffb347);align-self:flex-start;box-shadow:0 6px 18px rgba(0,0,0,0.4)}
+  .panel h2{margin:0;font-size:20px;font-weight:700}
+  .info{color:var(--muted);font-size:14px}
+
   .signup{
-    display:flex;gap:8px;align-items:center;
+    display:flex;gap:10px;margin-top:6px;
   }
-  .signup input[type="email"]{flex:1;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#fff}
-  .signup button{padding:10px 14px;border-radius:8px;border:none;background:linear-gradient(90deg,#ffd24d,#ffb347);color:#08121a;font-weight:800;cursor:not-allowed;opacity:0.9}
-  .hint{font-size:12px;color:#9fb2c9;margin-top:10px}
+  .signup input[type="email"]{
+    flex:1;padding:12px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);
+    background:transparent;color:#fff;font-size:14px;outline:none;
+    transition: box-shadow .18s, transform .12s;
+  }
+  .signup input[type="email"]:focus{box-shadow:0 6px 18px rgba(13,50,100,0.09);transform:translateY(-2px)}
+  .signup button{
+    padding:12px 14px;border-radius:10px;border:none;background:linear-gradient(90deg,#2bffb3,#7df7ff);color:#08121a;font-weight:800;cursor:not-allowed;opacity:0.95;
+  }
+  .hint{font-size:13px;color:#9fb2c9}
 
-  /* dekorativa lightsaber-linjer */
-  .bar{
-    position:absolute;left:0;right:0;height:6px;bottom:0;z-index:1;
-    background:linear-gradient(90deg, rgba(255,210,77,0.06), rgba(255,210,77,0.12) 50%, rgba(255,210,77,0.06));
-    filter:blur(8px);
+  /* decorative saber separators */
+  .sabers{
+    position:absolute;left:28px;right:28px;bottom:-18px;height:10px;pointer-events:none;display:flex;gap:8px;justify-content:center;z-index:0
+  }
+  .saber{flex:1;height:6px;border-radius:999px;background:linear-gradient(90deg,rgba(255,0,97,0.12),rgba(255,210,77,0.18));filter:blur(6px);opacity:0.8}
+
+  /* background layers: nebula + stars (CSS + canvas overlay) */
+  .bg-nebula{
+    position:fixed;inset:0;z-index:0;mix-blend-mode:screen;opacity:0.65;
+    background:
+      radial-gradient(600px 300px at 10% 20%, rgba(45,90,150,0.12), transparent),
+      radial-gradient(500px 260px at 85% 60%, rgba(120,40,100,0.08), transparent),
+      radial-gradient(420px 220px at 50% 10%, rgba(20,70,130,0.09), transparent);
+    pointer-events:none;
+    filter: blur(30px) saturate(120%);
   }
 
-  /* responsivt */
-  @media (max-width:880px){
-    .card{grid-template-columns:1fr;padding:18px}
-    .crawl-wrap{height:160px}
+  /* small responsive tweaks */
+  @media (max-width:920px){
+    .card{grid-template-columns:1fr;gap:18px;padding:18px}
+    .crawl-shell{height:180px}
     .panel{order:2}
+    .sabers{left:18px;right:18px}
   }
+
+  /* subtle accessibility focus */
+  :focus{outline: 3px solid rgba(255,210,77,0.12); outline-offset:3px}
 </style>
 </head>
 <body>
-<canvas id="stars" aria-hidden="true"></canvas>
+  <div class="bg-nebula" aria-hidden="true"></div>
+  <canvas id="stars" aria-hidden="true" style="position:fixed;inset:0;z-index:0"></canvas>
 
-<div class="wrap" role="main">
-  <div class="card" aria-labelledby="title">
-    <div class="welcome">
-      <h1 id="title">Välkommen, gäst</h1>
-      <p class="lead">Till STAR WARS‑mässan — en galax full av fans, kostymer och äventyr.</p>
-
-      <div class="crawl-wrap" aria-hidden="false">
-        <div class="crawl" role="article" aria-label="Kort meddelande">
-          <p><strong>Observera:</strong> Anmälningen till STAR WARS‑mässan öppnar snart. Håll utkik efter ny information här och via våra officiella kanaler.</p>
-          <p>Förbered din bästa kostym, samla vännerna och gör dig redo för panelsamtal, utställare och interaktiva upplevelser. Vi ser fram emot att fira galaxens berättelser tillsammans.</p>
+  <main class="stage" role="main" aria-labelledby="title">
+    <section class="card" aria-describedby="desc">
+      <div class="left" id="desc">
+        <div class="logo-row">
+          <div class="emblem" aria-hidden="true"></div>
+          <h1 id="title">Välkommen, gäst</h1>
         </div>
+
+        <p class="lead">Till STAR WARS‑mässan — en galax full av fans, kostymer och äventyr.</p>
+
+        <div class="crawl-shell" aria-live="polite">
+          <div class="crawl" role="article" aria-label="Kort meddelande om anmälan">
+            <p><strong>Observera:</strong> Anmälningen till STAR WARS‑mässan öppnar snart. Håll utkik efter ny information här och via våra officiella kanaler.</p>
+            <p>Förbered din bästa kostym, samla vännerna och gör dig redo för panelsamtal, utställare och interaktiva upplevelser. Vi ser fram emot att fira galaxens berättelser tillsammans.</p>
+          </div>
+        </div>
+
+        <p style="margin-top:14px;color:var(--muted);font-size:13px">Tips: Den här sidan har en filmisk crawl-animation och uppdaterar sig när anmälan öppnar.</p>
       </div>
-    </div>
 
-    <aside class="panel" aria-labelledby="infoTitle">
-      <div class="soon">ÖPPNAR SNART</div>
-      <h2 id="infoTitle">Anmälan & Biljetter</h2>
-      <p class="info">Biljettsläpp och mer information publiceras inom kort. Skriv upp din e‑post för att få avisering när anmälan öppnar.</p>
+      <aside class="panel" aria-labelledby="panelTitle">
+        <div class="status" id="status">ÖPPNAR SNART</div>
+        <h2 id="panelTitle">Anmälan & Biljetter</h2>
+        <p class="info">Biljettsläpp och mer information publiceras inom kort. Skriv upp din e‑post för att få avisering när anmälan öppnar.</p>
 
-      <form class="signup" onsubmit="event.preventDefault()">
-        <input type="email" placeholder="Din e‑post" aria-label="E‑post" disabled>
-        <button type="submit" disabled>Anmäl</button>
-      </form>
+        <form class="signup" onsubmit="event.preventDefault()" aria-label="Anmälan">
+          <input type="email" id="email" placeholder="Din e‑post" aria-label="E‑post" disabled>
+          <button id="submitBtn" type="submit" disabled>Anmäl</button>
+        </form>
 
-      <div class="hint">Prova att uppdatera sidan senare — eller följ våra sociala kanaler för snabba uppdateringar.</div>
-    </aside>
+        <div class="hint">Prova att uppdatera sidan senare — eller följ våra sociala kanaler för snabba uppdateringar.</div>
+      </aside>
 
-    <div class="bar" aria-hidden="true"></div>
-  </div>
-</div>
+      <div class="sabers" aria-hidden="true">
+        <div class="saber"></div>
+        <div class="saber"></div>
+        <div class="saber"></div>
+      </div>
+    </section>
+  </main>
 
 <script>
-/* Enkel stjärnfield canvas */
+/* Starfield canvas with parallax & twinkle */
 (function(){
   const canvas = document.getElementById('stars');
   const ctx = canvas.getContext('2d');
-  let w,h,stars=[];
-  function resize(){ w=canvas.width=innerWidth; h=canvas.height=innerHeight; initStars(); }
-  function initStars(){
-    const count = Math.max(120, Math.floor(w/6));
-    stars = new Array(count).fill(0).map(()=>{
-      return {
-        x: Math.random()*w,
-        y: Math.random()*h,
-        z: 0.2 + Math.random()*0.8,
-        r: 0.4 + Math.random()*1.6,
-        vx: (Math.random()-0.5)*0.04
-      };
-    });
+  let W,H,stars=[];
+  function resize(){ W=canvas.width=innerWidth; H=canvas.height=innerHeight; makeStars(); }
+  function makeStars(){
+    const count = Math.max(160, Math.floor(W/6));
+    stars = new Array(count).fill(0).map(()=>({
+      x: Math.random()*W,
+      y: Math.random()*H,
+      z: Math.random(),
+      r: (Math.random()*1.5)+0.3,
+      spin: Math.random()*0.02-0.01,
+      vx: (Math.random()-0.5)*0.03
+    }));
   }
-  function draw(){
-    ctx.clearRect(0,0,w,h);
-    // mild gradient
-    const g = ctx.createLinearGradient(0,0,0,h);
-    g.addColorStop(0, "rgba(6,10,18,0.7)");
-    g.addColorStop(1, "rgba(2,2,6,0.9)");
-    ctx.fillStyle = g;
-    ctx.fillRect(0,0,w,h);
+  function render(t){
+    ctx.clearRect(0,0,W,H);
+    // subtle vignette
+    const g = ctx.createLinearGradient(0,0,0,H);
+    g.addColorStop(0, 'rgba(2,6,14,0.0)');
+    g.addColorStop(1, 'rgba(0,0,0,0.35)');
+    ctx.fillStyle=g;
+    ctx.fillRect(0,0,W,H);
 
     // stars
-    for(const s of stars){
-      s.x += s.vx;
-      s.y += 0.2 + s.z*0.6;
-      if(s.y > h + 10){ s.y = -10; s.x = Math.random()*w; }
-      if(s.x < -10) s.x = w+10;
-      if(s.x > w+10) s.x = -10;
+    for(let i=0;i<stars.length;i++){
+      const s = stars[i];
+      s.x += s.vx + Math.sin((t/1000 + i)*0.0007)*0.12;
+      s.y += 0.15 + s.z*0.5;
+      if(s.y > H+10){ s.y = -10; s.x = Math.random()*W; }
+      if(s.x < -20) s.x = W+20;
+      if(s.x > W+20) s.x = -20;
+      const alpha = 0.5 + 0.5*Math.sin((t/500 + i)*0.5);
       ctx.beginPath();
-      const alpha = 0.6 + 0.4*Math.random()*s.z;
-      ctx.fillStyle = `rgba(255,255,255,${alpha.toFixed(2)})`;
-      ctx.arc(s.x, s.y, s.r * (1 + s.z*1.7), 0, Math.PI*2);
+      ctx.fillStyle = `rgba(255,255,255,${(alpha*s.z).toFixed(2)})`;
+      ctx.arc(s.x, s.y, s.r*(1 + s.z*1.8), 0, Math.PI*2);
       ctx.fill();
     }
-    requestAnimationFrame(draw);
+    requestAnimationFrame(render);
   }
   addEventListener('resize', resize);
-  resize(); draw();
+  resize(); requestAnimationFrame(render);
 })();
 
-/* Liten interaktiv hint: visa notis när anmälan öppnar (demo) */
+/* UX: enable signup after delay (demo), animate status */
 (function(){
-  // Demo: efter 10 sek visar vi meddelande (byts ut i verkligheten)
+  const status = document.getElementById('status');
+  const email = document.getElementById('email');
+  const btn = document.getElementById('submitBtn');
+
+  // small timeline: pulsing then open after 10s
+  status.animate([{transform:'scale(1)'},{transform:'scale(1.06)'},{transform:'scale(1)'}],{duration:2000,iterations:Infinity});
+
   setTimeout(()=>{
-    const soon = document.querySelector('.soon');
-    if(!soon) return;
-    soon.textContent = 'ANMÄLAN ÖPPEN';
-    soon.style.background = 'linear-gradient(90deg,#2bffb3,#7df7ff)';
-    document.querySelectorAll('.signup input, .signup button').forEach(el=>{
-      el.disabled = false;
-      el.placeholder = el.type === 'email' ? 'example@exempel.se' : el.placeholder;
-      el.style.cursor = 'text';
-      el.style.opacity = 1;
-      el.style.transition = 'opacity 300ms';
-    });
-    const btn = document.querySelector('.signup button');
+    status.textContent = 'ANMÄLAN ÖPPEN';
+    status.style.background = 'linear-gradient(90deg,#2bffb3,#7df7ff)';
+    email.disabled = false;
+    btn.disabled = false;
     btn.style.cursor = 'pointer';
-    btn.addEventListener('click', ()=>{
-      alert('Tack! (detta är en demo) — anmälan hanteras via officiella kanaler.');
+    btn.addEventListener('click', ()=> {
+      const val = email.value.trim();
+      if(!val) return alert('Ange en e‑postadress (demo).');
+      alert('Tack! (detta är en demo) — vi skickar info när bokningen öppnar.');
     });
   }, 10000);
 })();
+
+/* Accessibility: allow Enter to submit when enabled */
+document.addEventListener('keydown', (e)=>{
+  if(e.key==='Enter'){
+    const btn = document.getElementById('submitBtn');
+    if(!btn.disabled) btn.click();
+  }
+});
 </script>
 </body>
 </html>

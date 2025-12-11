@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Innovation Summit - Webinar Registration</title>
+    <link rel="stylesheet" href="../css/index.css">
+</head>
+<body>
+    <!-- Header Section -->
+    <header class="header">
+        <div class="container">
+            <h1>AI Innovation Summit: Så Använder du Tekniken i Praktiken</h1>
+            <p class="tagline">Forma framtiden med nästa generations AI</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Event Details Section -->
+        <section class="event-info">
+            <div class="info-grid">
+                <div class="info-card">
+                    <h3>📅 Datum</h3>
+                    <p>December 15, 2025</p>
+                </div>
+                <div class="info-card">
+                    <h3>⏰ Tid</h3>
+                    <p>14:00  - 17:00  CET</p>
+                </div>
+                <div class="info-card">
+                    <h3>🌐 Format</h3>
+                    <p>Virtuell Webinare</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section class="about">
+            <h2>Om Webinariet</h2>
+            <p>Hör branschens frontfigurer diskutera AI:s senaste utveckling och dess tillämpning i olika branscher. Vi visar hur AI formar framtidens affärsstrategier, driver effektivisering och genererar nya marknadsmöjligheter.</p>
+        </section>
+
+        <!-- Keynote Speakers Section -->
+        <section class="speakers">
+            <h2>Möt våra Keynotes</h2>
+            <p class="speakers-intro">Ta del av kunskap från globala spjutspetsar inom artificiell intelligens och teknik.</p>
+            
+            <div class="speaker-grid">
+                <div class="speaker-card">
+                    <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop" alt="Dr. Sarah Chen" class="speaker-img">
+                    <h3>Sara Chen</h3>
+                    <p class="speaker-title">AI Research Director</p>
+                    <p class="speaker-bio"> Sarah Chen har en bakgrund inom marknadsföring och design och driver ett konsultföretag som hjälper varumärken att integrera AI för bildskapande, textgenerering och innehållsplanering. </p>
+                </div>
+
+                <div class="speaker-card">
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop" alt="Michael Rodriguez" class="speaker-img">
+                    <h3>Christian Shultz</h3>
+                    <p class="speaker-title">AI Product Innovation Lead</p>
+                    <p class="speaker-bio">Professor Christian Shultz forskning belyser hur människan och AI bearbetar information. Hans arbete syftar till att definiera principerna för en hållbar och långsiktig samverkan mellan människor och IT-system.</p>
+                </div>
+
+                <div class="speaker-card">
+                    <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop" alt="Emily Thompson" class="speaker-img">
+                    <h3>Dr. Elara Jönsson</h3>
+                    <p class="speaker-title">Kognitionsvetare med spetskompetens inom Människa–AI-Interaktion.</p>
+                    <p class="speaker-bio">Hennes arbete fokuserar på den praktiska tillämpningen av generativ AI i både professionella och personliga rutiner. Hon är specialiserad på att utbilda icke-tekniska team i effektiva AI-verktyg. </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Registration Section -->
+        <section class="registration" id="registration-section">
+            <div class="registration-wrapper">
+                <div class="registration-content" id="registration-form-container">
+                    <h2>Registrering för Webinariet</h2>
+                    <p>Säkra din plats idag. Det är gratis och tar mindre än en minut.</p>
+                    
+                    <form id="registration-form" class="registration-form">
+                        <div class="form-group">
+                            <label for="fullname">Full Namn *</label>
+                            <input type="text" id="fullname" name="fullname" required placeholder="John Doe">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">Email Address *</label>
+                            <input type="email" id="email" name="email" required placeholder="john@example.com">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="company">Företag/Organisation</label>
+                            <input type="text" id="company" name="company" placeholder="Ditt Företag AB">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="phone">Telefon Nummer</label>
+                            <input type="tel" id="phone" name="phone" placeholder="(+46) 70 123 45 67">
+                        </div>
+
+                        <div class="form-group checkbox-group">
+                            <input type="checkbox" id="terms" name="terms" required>
+                            <label for="terms">Jag samtycker till att ta emot uppdateringar och information om framtida AI-event.</label>
+                        </div>
+
+                        <button type="submit" class="submit-button">Registrera dig nu!</button>
+                    </form>
+                </div>
+
+                <!-- Success Message (Hidden initially) -->
+                <div class="success-message" id="success-message" style="display: none;">
+                    <div class="success-content">
+                        <div class="success-icon">✓</div>
+                        <h2>Registrering Bekräftad!</h2>
+                        <p>Tack för din registrering till AI Innovation Summit.</p>
+                        <p class="confirmation-details">Ett bekräftelse mail har skickats till <strong id="registered-email"></strong></p>
+                        <p class="event-reminder"><Vi ser fram emot att träffa dig> <strong>December 15, 2025</strong> at <strong>14:00 CET</strong>.</p>
+                        <button class="reset-button" onclick="resetForm()">Registrera annan deltagare</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>&copy; 2025 AI Innovation Summit. Alla rättigheter reserverade.</p>
+        </footer>
+    </main>
+
+    <script src="../js/script.js"></script>
+</body>
+</html>
